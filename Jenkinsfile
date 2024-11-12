@@ -47,7 +47,7 @@ pipeline {
                 sh '''
                 git add java_artifacts/HelloWorld.jar
                 git commit -m "Adding compiled artifact"
-                git push https://${GITHUB_TOKEN}@github.com/yourusername/your-repo.git
+                git push https://${GITHUB_TOKEN}@github.com/tejasdurge55/b_project_submodule_repo.git
                 '''
             }
         }
