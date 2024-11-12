@@ -9,13 +9,14 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Clone repository
-                git url: 'https://github.com/yourusername/your-repo.git', branch: 'main'
+                git url: 'https://https://github.com/tejasdurge55/b_project_submodule_repo.git', branch: 'master'
             }
         }
 
         stage('Compile Java Code') {
             steps {
                 // Compile the Java code
+                sh 'cd b_project_submodule_repo/java_files'
                 sh 'javac HelloWorld.java'
             }
         }
@@ -31,8 +32,8 @@ pipeline {
             steps {
                 // Configure Git user details
                 sh '''
-                git config --global user.email "your.email@example.com"
-                git config --global user.name "Your Name"
+                git config --global user.email "tejas.y.durge@gmail.com"
+                git config --global user.name "tejasdurge55"
                 '''
 
                 // Add, commit, and push the JAR file
