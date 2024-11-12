@@ -9,7 +9,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Clone repository
-                git url: 'https://https://github.com/tejasdurge55/b_project_submodule_repo.git', branch: 'master'
+                git url: 'https://github.com/tejasdurge55/b_project_submodule_repo.git', branch: 'master'
             }
         }
 
