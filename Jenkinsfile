@@ -23,9 +23,17 @@ pipeline {
         stage('Package Artifact') {
             steps {
                 // Package compiled class into a JAR file
-                sh 'jar cf HelloWorld.jar HelloWorld.class'
+                sh 'cd java_files && jar cf HelloWorld.jar HelloWorld.class'
             }
         }
+
+        stage('Run and move Artifact') {
+            steps {
+                // Package compiled class into a JAR file
+                sh 'cd java_files && java -cp HelloWorld.jar HelloWorld && cd .. && cp java_files/HelloWorld.jar java_artifacts/ '
+            }
+        }
+
 
         stage('Commit and Push Artifact') {
             steps {
@@ -37,7 +45,7 @@ pipeline {
 
                 // Add, commit, and push the JAR file
                 sh '''
-                git add HelloWorld.jar
+                git add java_artifacts/HelloWorld.jar
                 git commit -m "Adding compiled artifact"
                 git push https://${GITHUB_TOKEN}@github.com/yourusername/your-repo.git
                 '''
