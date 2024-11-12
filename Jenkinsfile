@@ -16,8 +16,7 @@ pipeline {
         stage('Compile Java Code') {
             steps {
                 // Compile the Java code
-                sh 'cd b_project_submodule_repo/java_files'
-                sh 'javac HelloWorld.java'
+                sh 'cd java_files && javac HelloWorld.java'
             }
         }
 
