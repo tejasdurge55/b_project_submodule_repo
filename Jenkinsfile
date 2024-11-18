@@ -1,74 +1,45 @@
 pipeline {
     agent any
-
     environment {
-        GITHUB_TOKEN = credentials('github-token') // Replace with your Jenkins credential ID
-        GIT_USER_EMAIL = "tejas.y.durge@gmail.com"
-        GIT_USER_NAME = "tejasdurge55"
+        GITHUB_TOKEN = credentials('github-token')  // Replace with your actual GitHub token credentials ID
     }
-
     stages {
-        stage('Clone Repository') {
+        stage('Checkout SCM') {
             steps {
-                git url: 'https://github.com/tejasdurge55/b_project_submodule_repo.git', branch: 'master'
+                checkout scm
             }
         }
-
         stage('Compile and Package Java Code') {
             steps {
-                sh '''
-                    cd java_files
-                    javac HelloWorld.java
-                    jar cf HelloWorld.jar HelloWorld.class
-                    cd ..
-                    cp java_files/HelloWorld.jar java_artifacts/
-                '''
-            }
-        }
-
-        stage('Commit, Push Artifact, and Tag') {
-            steps {
                 script {
-                    // Configure Git
-                    sh """
-                        git config --global user.email "${GIT_USER_EMAIL}"
-                        git config --global user.name "${GIT_USER_NAME}"
-                    """
-
-                    // Commit and push artifact
-                    sh '''
-                        git add java_artifacts/HelloWorld.jar
-                        git commit -m "Adding compiled artifact"
-                        git push https://${GITHUB_TOKEN}@github.com/tejasdurge55/b_project_submodule_repo.git HEAD:artifact-branch --force
-                    '''
-
-                    // Tagging and pushing
-                    def latestTag = sh(script: "git describe --tags `git rev-list --tags --max-count=1`", returnStdout: true).trim()
-                    def newTag = sh(script: "echo ${latestTag} | awk -F. -v OFS=. '{\$NF++; print \"v\"\$0}'", returnStdout: true).trim()
-                    echo "Tagging repository with ${newTag}"
-
-                    sh """
-                        git tag ${newTag}
-                        git push https://${GITHUB_TOKEN}@github.com/tejasdurge55/b_project_submodule_repo.git ${newTag}
-                    """
-
-                    // Optional: Create a GitHub release
-                    sh """
-                        curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
-                        -d '{"tag_name": "${newTag}", "name": "${newTag}", "body": "Release created by Jenkins"}' \
-                        https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/releases
-                    """
+                    sh 'javac HelloWorld.java'
+                    sh 'jar cf HelloWorld.jar HelloWorld.class'
+                    sh 'cp HelloWorld.jar java_artifacts/'
                 }
             }
         }
-    }
-
-    post {
-        success {
-            echo "Pipeline completed successfully!"
-        }
-        failure {
-            echo "Pipeline failed. Check logs for details."
+        stage('Commit, Push Artifact, and Tag') {
+            steps {
+                script {
+                    def latestTag = sh(script: "git describe --tags --abbrev=0", returnStdout: true).trim()  // Get the latest tag
+                    def newTag = sh(script: "echo ${latestTag} | awk -F. -v OFS=. '{\$NF++; print \"v\"\$0}'", returnStdout: true).trim()
+                    
+                    echo "New tag to be created: ${newTag}"
+                    
+                    // Commit the artifact
+                    sh 'git config --global user.email "tejas.y.durge@gmail.com"'
+                    sh 'git config --global user.name "tejasdurge55"'
+                    sh 'git add java_artifacts/HelloWorld.jar'
+                    sh 'git commit -m "Adding compiled artifact"'
+                    
+                    // Push the artifact to a separate branch
+                    sh 'git push https://****@github.com/tejasdurge55/b_project_submodule_repo.git HEAD:artifact-branch --force'
+                    
+                    // Create the new tag and push it
+                    sh "git tag ${newTag}"
+                    sh "git push origin ${newTag}"
+                }
+            }
         }
     }
 }
