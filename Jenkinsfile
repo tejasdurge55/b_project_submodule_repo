@@ -76,9 +76,9 @@ pipeline {
                     sh 'git push https://${GITHUB_TOKEN}@github.com/tejasdurge55/b_project_submodule_repo.git HEAD:artifact-branch --force'
                     
                     // Tag the repository with the new version
-                    git remote set-url origin https://${GITHUB_TOKEN}@github.com/tejasdurge55/b_project_submodule_repo.git
-                    git tag ${env.NEW_TAG}
-                    git push origin ${env.NEW_TAG}
+                    sh 'git remote set-url origin https://${GITHUB_TOKEN}@github.com/tejasdurge55/b_project_submodule_repo.git'
+                    sh 'git tag ${env.NEW_TAG}'
+                    sh 'git push origin ${env.NEW_TAG}'
                 }
             }
         }
