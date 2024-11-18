@@ -47,9 +47,41 @@ pipeline {
                 sh '''
                 git add java_artifacts/HelloWorld.jar
                 git commit -m "Adding compiled artifact"
-                git push https://${GITHUB_TOKEN}@github.com/tejasdurge55/b_project_submodule_repo.git
+                git push https://${GITHUB_TOKEN}@github.com/tejasdurge55/b_project_submodule_repo.git HEAD:artifact-branch
                 '''
             }
+        }
+    }
+    
+    post {
+        success {
+            script {
+
+                sh 'latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)'
+                def tagName = "v$(echo $latestTag | awk -F. -v OFS=. '{$NF++; print}')"
+                echo "Tagging repository with ${tagName}"
+
+                // Configure Git user
+                sh 'git config --global user.name "Jenkins CI"'
+                sh 'git config --global user.email "jenkins@example.com"'
+
+                // Create and push tag
+                sh "git tag ${tagName}"
+                sh "git push origin ${tagName}"
+                
+                // Optional: Create a GitHub release (if using GitHub)
+                withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
+                    sh """
+                        curl -X POST -H "Authorization: token ${GITHUB_TOKEN}" \
+                        -d '{"tag_name": "${tagName}", "name": "${tagName}", "body": "Release created by Jenkins"}' \
+                        https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/releases
+                    """
+                }
+            }
+        }
+
+        failure {
+            echo "Pipeline failed. No tag created."
         }
     }
 }
