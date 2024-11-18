@@ -37,7 +37,7 @@ pipeline {
                     def (major, minor, patch) = latestTag.replace('v', '').tokenize('.').collect { it.toInteger() }
 
                     // Determine the version increment
-                    switch (patch) {
+                    switch (minor) {
                         case 'major':
                             major++
                             minor = 0
