@@ -38,7 +38,7 @@ pipeline {
 
                     // Determine the version increment
                     switch ('minor') {
-                        case 'major':
+                        case 'patch':
                             major++
                             minor = 0
                             patch = 0
