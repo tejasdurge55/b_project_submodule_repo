@@ -71,8 +71,22 @@ pipeline {
                     sh 'git push https://${GITHUB_TOKEN}@github.com/tejasdurge55/b_project_submodule_repo.git HEAD:artifact-branch --force'
                     
                     // Tag the repository with the new version
-                    sh 'git tag v0.0.5'
-                    sh 'git push https://${GITHUB_TOKEN}@github.com/tejasdurge55/b_project_submodule_repo.git v0.0.5'
+                    // sh 'git tag v0.0.5'
+                    // sh 'git push https://${GITHUB_TOKEN}@github.com/tejasdurge55/b_project_submodule_repo.git v0.0.5'
+                    sh """
+                        curl -X POST \
+                        -H "Authorization: token ${GITHUB_TOKEN}" \
+                        -H "Content-Type: application/json" \
+                        -d '{
+                              "tag_name": "0.0.6",
+                              "name": "0.0.6",
+                              "body": "Release for version 0.0.6",
+                              "draft": false,
+                              "prerelease": false
+                            }' \
+                        https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/releases
+                    """
+
                 }
             }
         }
