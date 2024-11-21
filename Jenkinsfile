@@ -37,8 +37,8 @@ pipeline {
                     def (major, minor, patch) = latestTag.replace('v', '').tokenize('.').collect { it.toInteger() }
 
                     // Determine the version increment
-                    switch ('minor') {
-                        case 'patch':
+                    switch ('patch') {
+                        case 'major':
                             major++
                             minor = 0
                             patch = 0
@@ -60,12 +60,7 @@ pipeline {
                     
                     // Set this as an environment variable for later stages
                     env.NEW_TAG = newTag
-                }
-            }
-        }
-        stage('Commit, Push Artifact, and Tag') {
-            steps {
-                script {
+
                     // Commit the artifact
                     sh 'git config --global user.email "tejas.y.durge@gmail.com"'
                     sh 'git config --global user.name "tejasdurge55"'
