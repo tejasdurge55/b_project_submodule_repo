@@ -64,7 +64,7 @@ pipeline {
                     // Fetch the PR body
                     def prNumber = sh(script: """
                         curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
-                        https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls?state=open&sort=updated&direction=desc \
+                        https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls?state=closed&sort=updated&direction=desc \
                         | jq -r '.[0].number'
                     """, returnStdout: true).trim()
                     
