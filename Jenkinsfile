@@ -62,16 +62,37 @@ pipeline {
                     // env.NEW_TAG = newTag
 
                     // Fetch the PR body
-                    def prNumber = env.CHANGE_ID // Provided by Jenkins GitHub integration
-                    echo "prNumber: ${prNumber}"
+                    def prNumber = sh(script: """
+                        curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+                        https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls?state=open&sort=updated&direction=desc \
+                        | jq -r '.[0].number'
+                    """, returnStdout: true).trim()
                     
+                    // Check if a valid PR number was retrieved
+                    if (!prNumber?.isInteger()) {
+                        error "No open PR found or failed to retrieve PR number."
+                    }
+                    
+                    echo "Latest PR number: ${prNumber}"
                     env.PR_NO = prNumber
                     
+                    // Fetch the PR body
                     def prBody = sh(script: """
                         curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
                         https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls/$PR_NO \
                         | jq -r '.body'
                     """, returnStdout: true).trim()
+                    
+                    echo "PR Body: ${prBody}"
+
+
+                    
+                    
+                    // def prBody = sh(script: """
+                    //     curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+                    //     https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls/$PR_NO \
+                    //     | jq -r '.body'
+                    // """, returnStdout: true).trim()
         
                     // Determine the version increment
                     def incrementType = 'patch' // Default
