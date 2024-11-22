@@ -71,16 +71,16 @@ pipeline {
                     sh 'git push https://${GITHUB_TOKEN}@github.com/tejasdurge55/b_project_submodule_repo.git HEAD:artifact-branch --force'
                     
                     // Tag the repository with the new version
-                    // sh 'git tag v0.0.5'
-                    // sh 'git push https://${GITHUB_TOKEN}@github.com/tejasdurge55/b_project_submodule_repo.git v0.0.5'
+                    // sh 'git tag $NEW_TAG'
+                    // sh 'git push https://${GITHUB_TOKEN}@github.com/tejasdurge55/b_project_submodule_repo.git $NEW_TAG'
                     sh """
                         curl -X POST \
                         -H "Authorization: token ${GITHUB_TOKEN}" \
                         -H "Content-Type: application/json" \
                         -d '{
-                              "tag_name": "0.0.6",
-                              "name": "0.0.6",
-                              "body": "Release for version 0.0.6",
+                              "tag_name": "$NEW_TAG",
+                              "name": "$NEW_TAG,
+                              "body": "Release for version $NEW_TAG",
                               "draft": false,
                               "prerelease": false
                             }' \
