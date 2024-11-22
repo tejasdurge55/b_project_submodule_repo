@@ -79,7 +79,7 @@ pipeline {
                         -H "Content-Type: application/json" \
                         -d '{
                               "tag_name": "$NEW_TAG",
-                              "name": "$NEW_TAG,
+                              "name": "$NEW_TAG",
                               "body": "Release for version $NEW_TAG",
                               "draft": false,
                               "prerelease": false
