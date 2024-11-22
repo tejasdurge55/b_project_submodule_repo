@@ -29,15 +29,63 @@ pipeline {
         stage('Determine New Version') {
             steps {
                 script {
-                    // Get the latest tag from GitHub
-                    def latestTag = sh(script: "git describe --tags --abbrev=0", returnStdout: true).trim()
-                    echo "Latest tag: ${latestTag}"
+                    // // Get the latest tag from GitHub
+                    // def latestTag = sh(script: "git describe --tags --abbrev=0", returnStdout: true).trim()
+                    // echo "Latest tag: ${latestTag}"
                     
-                    // Extract version components (e.g., 1.2.3 -> major=1, minor=2, patch=3)
-                    def (major, minor, patch) = latestTag.replace('v', '').tokenize('.').collect { it.toInteger() }
+                    // // Extract version components (e.g., 1.2.3 -> major=1, minor=2, patch=3)
+                    // def (major, minor, patch) = latestTag.replace('v', '').tokenize('.').collect { it.toInteger() }
 
+                    // // Determine the version increment
+                    // switch ('patch') {
+                    //     case 'major':
+                    //         major++
+                    //         minor = 0
+                    //         patch = 0
+                    //         break
+                    //     case 'minor':
+                    //         minor++
+                    //         patch = 0
+                    //         break
+                    //     case 'patch':
+                    //         patch++
+                    //         break
+                    //     default:
+                    //         error "Invalid VERSION_INCREMENT: ${params.VERSION_INCREMENT}"
+                    // }
+
+                    // // Construct the new version
+                    // def newTag = "v${major}.${minor}.${patch}"
+                    // echo "New tag: ${newTag}"
+                    
+                    // // Set this as an environment variable for later stages
+                    // env.NEW_TAG = newTag
+
+                    // Fetch the PR body
+                    def prNumber = env.CHANGE_ID // Provided by Jenkins GitHub integration
+                    def prBody = sh(script: """
+                        curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+                        https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls/${prNumber} \
+                        | jq -r '.body'
+                    """, returnStdout: true).trim()
+        
                     // Determine the version increment
-                    switch ('patch') {
+                    def incrementType = 'patch' // Default
+                    if (prBody.contains("**Major**")) {
+                        incrementType = 'major'
+                    } else if (prBody.contains("**Minor**")) {
+                        incrementType = 'minor'
+                    } else if (prBody.contains("**Patch**")) {
+                        incrementType = 'patch'
+                    } else {
+                        error "No valid version increment selected in the PR body."
+                    }
+                    echo "Version increment type: ${incrementType}"
+        
+                    // Calculate the new version based on the selected type
+                    def latestTag = sh(script: "git describe --tags --abbrev=0", returnStdout: true).trim()
+                    def (major, minor, patch) = latestTag.replace('v', '').tokenize('.').collect { it.toInteger() }
+                    switch (incrementType) {
                         case 'major':
                             major++
                             minor = 0
@@ -50,17 +98,12 @@ pipeline {
                         case 'patch':
                             patch++
                             break
-                        default:
-                            error "Invalid VERSION_INCREMENT: ${params.VERSION_INCREMENT}"
                     }
-
-                    // Construct the new version
                     def newTag = "v${major}.${minor}.${patch}"
                     echo "New tag: ${newTag}"
-                    
-                    // Set this as an environment variable for later stages
                     env.NEW_TAG = newTag
 
+                    
                     // Commit the artifact
                     sh 'git config --global user.email "tejas.y.durge@gmail.com"'
                     sh 'git config --global user.name "tejasdurge55"'
