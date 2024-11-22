@@ -67,6 +67,7 @@ pipeline {
                         https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls?state=closed&sort=updated&direction=desc \
                         | jq -r '.[0].number'
                     """, returnStdout: true).trim()
+                    echo "Latest PR number: ${prNumber}"
                     
                     // Check if a valid PR number was retrieved
                     if (!prNumber?.isInteger()) {
