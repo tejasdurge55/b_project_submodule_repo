@@ -63,9 +63,13 @@ pipeline {
 
                     // Fetch the PR body
                     def prNumber = env.CHANGE_ID // Provided by Jenkins GitHub integration
+                    echo "prNumber: ${prNumber}"
+                    
+                    env.PR_NO = prNumber
+                    
                     def prBody = sh(script: """
                         curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
-                        https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls/${prNumber} \
+                        https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls/$PR_NO \
                         | jq -r '.body'
                     """, returnStdout: true).trim()
         
