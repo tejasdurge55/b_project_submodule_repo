@@ -134,7 +134,7 @@ pipeline {
 
                     // Fetch the latest merged PR number targeting master
                     def prBody = sh(script: """
-                        curl -s -H "Authorization: token ${GITHUB_TOKEN}" https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls?state=closed&sort=updated&direction=desc&per_page=1
+                        curl -s -H "Authorization: token ${GITHUB_TOKEN}" "https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls?state=closed&sort=updated&direction=desc&per_page=1"
                     """, returnStdout: true).trim()
 
                     // def prNumber = sh(script: """
