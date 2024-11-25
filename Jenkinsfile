@@ -159,7 +159,7 @@ pipeline {
                     // """, returnStdout: true).trim()
                     
                     if (!prBody) {
-                        error "Failed to fetch PR body for PR #${prNumber}."
+                        error "Failed to fetch PR body for PR."
                     }
                     
                     echo "PR Body: ${prBody}"
