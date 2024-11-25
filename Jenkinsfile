@@ -62,16 +62,91 @@ pipeline {
                     // env.NEW_TAG = newTag
 
                     // Fetch the PR body
+                    // def prNumber = sh(script: """
+                    //     curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+                    //     https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls?state=closed&sort=updated&direction=desc \
+                    //     | jq -r '.[0].number'
+                    // """, returnStdout: true).trim()
+                    // echo "Latest PR number: ${prNumber}"
+                    
+                    // // Check if a valid PR number was retrieved
+                    // if (!prNumber?.isInteger()) {
+                    //     error "No open PR found or failed to retrieve PR number."
+                    // }
+                    
+                    // echo "Latest PR number: ${prNumber}"
+                    // env.PR_NO = prNumber
+                    
+                    // // Fetch the PR body
+                    // def prBody = sh(script: """
+                    //     curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+                    //     https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls/$PR_NO \
+                    //     | jq -r '.body'
+                    // """, returnStdout: true).trim()
+                    
+                    // echo "PR Body: ${prBody}"
+
+
+                    
+                    
+                    // // def prBody = sh(script: """
+                    // //     curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+                    // //     https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls/$PR_NO \
+                    // //     | jq -r '.body'
+                    // // """, returnStdout: true).trim()
+        
+                    // // Determine the version increment
+                    // def incrementType = 'patch' // Default
+                    // if (prBody.contains("**Major**")) {
+                    //     incrementType = 'major'
+                    // } else if (prBody.contains("**Minor**")) {
+                    //     incrementType = 'minor'
+                    // } else if (prBody.contains("**Patch**")) {
+                    //     incrementType = 'patch'
+                    // } else {
+                    //     error "No valid version increment selected in the PR body."
+                    // }
+                    // echo "Version increment type: ${incrementType}"
+        
+                    // // Calculate the new version based on the selected type
+                    // def latestTag = sh(script: "git describe --tags --abbrev=0", returnStdout: true).trim()
+                    // def (major, minor, patch) = latestTag.replace('v', '').tokenize('.').collect { it.toInteger() }
+                    // switch (incrementType) {
+                    //     case 'major':
+                    //         major++
+                    //         minor = 0
+                    //         patch = 0
+                    //         break
+                    //     case 'minor':
+                    //         minor++
+                    //         patch = 0
+                    //         break
+                    //     case 'patch':
+                    //         patch++
+                    //         break
+                    // }
+                    // def newTag = "v${major}.${minor}.${patch}"
+                    // echo "New tag: ${newTag}"
+                    // env.NEW_TAG = newTag
+
+
+                    
+
+                    // Fetch the latest merged PR number targeting master
+                    // def prNumber = sh(script: """
+                    //     response=\$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" "https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls?state=closed&sort=updated&direction=desc&per_page=1")
+                    //     jq -r '.[0].number' <<<"\$response"
+                    // """, returnStdout: true).trim()
+
                     def prNumber = sh(script: """
                         curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
-                        https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls?state=closed&sort=updated&direction=desc \
-                        | jq -r '.[0].number'
+                        https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls?state=closed&sort=updated&direction=desc&per_page=1 \
+                        | jq -r '.body'
                     """, returnStdout: true).trim()
-                    echo "Latest PR number: ${prNumber}"
+
                     
-                    // Check if a valid PR number was retrieved
                     if (!prNumber?.isInteger()) {
-                        error "No open PR found or failed to retrieve PR number."
+                        error "No valid PR found or failed to retrieve PR number."
                     }
                     
                     echo "Latest PR number: ${prNumber}"
@@ -80,36 +155,35 @@ pipeline {
                     // Fetch the PR body
                     def prBody = sh(script: """
                         curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
-                        https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls/$PR_NO \
+                        https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls/${prNumber} \
                         | jq -r '.body'
                     """, returnStdout: true).trim()
                     
+                    if (!prBody) {
+                        error "Failed to fetch PR body for PR #${prNumber}."
+                    }
+                    
                     echo "PR Body: ${prBody}"
-
-
                     
-                    
-                    // def prBody = sh(script: """
-                    //     curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
-                    //     https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls/$PR_NO \
-                    //     | jq -r '.body'
-                    // """, returnStdout: true).trim()
-        
                     // Determine the version increment
-                    def incrementType = 'patch' // Default
-                    if (prBody.contains("**Major**")) {
+                    def incrementType = 'patch' // Default increment
+                    if (prBody.contains("[X] **Major**")) {
                         incrementType = 'major'
-                    } else if (prBody.contains("**Minor**")) {
+                    } else if (prBody.contains("[X] **Minor**")) {
                         incrementType = 'minor'
-                    } else if (prBody.contains("**Patch**")) {
+                    } else if (prBody.contains("[X] **Patch**")) {
                         incrementType = 'patch'
                     } else {
-                        error "No valid version increment selected in the PR body."
+                        error "No valid version increment type specified in the PR body."
                     }
+                    
                     echo "Version increment type: ${incrementType}"
-        
-                    // Calculate the new version based on the selected type
+                    
+                    // Fetch the latest tag
                     def latestTag = sh(script: "git describe --tags --abbrev=0", returnStdout: true).trim()
+                    echo "Latest tag: ${latestTag}"
+                    
+                    // Calculate the new version based on the increment type
                     def (major, minor, patch) = latestTag.replace('v', '').tokenize('.').collect { it.toInteger() }
                     switch (incrementType) {
                         case 'major':
@@ -125,9 +199,14 @@ pipeline {
                             patch++
                             break
                     }
+                    
                     def newTag = "v${major}.${minor}.${patch}"
                     echo "New tag: ${newTag}"
                     env.NEW_TAG = newTag
+                    
+                    // Output the new tag for verification
+                    echo "Pipeline completed successfully. New version tag is: ${newTag}"
+                    
 
                     
                     // Commit the artifact
