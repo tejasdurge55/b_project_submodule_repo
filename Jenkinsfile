@@ -158,9 +158,9 @@ pipeline {
                     //     | jq -r '.body'
                     // """, returnStdout: true).trim()
                     
-                    if (!prBody) {
-                        error "Failed to fetch PR body for PR."
-                    }
+                    // if (!prBody) {
+                    //     error "Failed to fetch PR body for PR."
+                    // }
                     
                     echo "PR Body: ${prBody}"
                     
