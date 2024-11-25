@@ -133,9 +133,8 @@ pipeline {
                     
 
                     // Fetch the latest merged PR number targeting master
-                    def prNumber = sh(script: """
-                        response=\$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" "https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls?state=closed&sort=updated&direction=desc&per_page=1")
-                        jq -r '.[0].number' <<<"\$response"
+                    def prBody = sh(script: """
+                        curl -s -H "Authorization: token ${GITHUB_TOKEN}" https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls?state=closed&sort=updated&direction=desc&per_page=1
                     """, returnStdout: true).trim()
 
                     // def prNumber = sh(script: """
@@ -145,19 +144,19 @@ pipeline {
                     // """, returnStdout: true).trim()
 
                     
-                    if (!prNumber?.isInteger()) {
-                        error "No valid PR found or failed to retrieve PR number."
-                    }
+                    // if (!prNumber?.isInteger()) {
+                    //     error "No valid PR found or failed to retrieve PR number."
+                    // }
                     
-                    echo "Latest PR number: ${prNumber}"
-                    env.PR_NO = prNumber
+                    // echo "Latest PR number: ${prNumber}"
+                    // env.PR_NO = prNumber
                     
-                    // Fetch the PR body
-                    def prBody = sh(script: """
-                        curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
-                        https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls/${prNumber} \
-                        | jq -r '.body'
-                    """, returnStdout: true).trim()
+                    // // Fetch the PR body
+                    // def prBody = sh(script: """
+                    //     curl -s -H "Authorization: token ${GITHUB_TOKEN}" \
+                    //     https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls/${prNumber} \
+                    //     | jq -r '.body'
+                    // """, returnStdout: true).trim()
                     
                     if (!prBody) {
                         error "Failed to fetch PR body for PR #${prNumber}."
