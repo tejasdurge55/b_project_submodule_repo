@@ -134,7 +134,7 @@ pipeline {
 
                     // Fetch the latest merged PR number targeting master
                     def prBody = sh(script: """
-                        curl -s -H "Authorization: token ${GITHUB_TOKEN}" "https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls?state=closed&sort=updated&direction=desc&per_page=1"
+                        curl -s -H "Authorization: token ${GITHUB_TOKEN}" "https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/pulls?state=closed&sort=updated&direction=desc&per_page=1" | jq -r '.[0].body'
                     """, returnStdout: true).trim()
 
                     // def prNumber = sh(script: """
@@ -166,11 +166,11 @@ pipeline {
                     
                     // Determine the version increment
                     def incrementType = 'patch' // Default increment
-                    if (prBody.contains("[X] **Major**")) {
+                    if (prBody.contains("[X] **Major**") || prBody.contains("[x] **Major**") ) {
                         incrementType = 'major'
-                    } else if (prBody.contains("[X] **Minor**")) {
+                    } else if (prBody.contains("[X] **Minor**") || prBody.contains("[x] **Minor**") ) {
                         incrementType = 'minor'
-                    } else if (prBody.contains("[X] **Patch**")) {
+                    } else if (prBody.contains("[X] **Patch**") || prBody.contains("[x] **Patch**") ) {
                         incrementType = 'patch'
                     } else {
                         error "No valid version increment type specified in the PR body."
