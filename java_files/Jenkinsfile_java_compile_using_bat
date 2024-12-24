@@ -1,0 +1,18 @@
+pipeline {
+    agent none  
+          
+    stages {
+        stage('Run Batch File on Windows') {
+            agent {
+                node {
+                    label 'Windows-Agent' // This refers to the label of the Windows machine node
+                }
+            }
+         
+            steps {
+                // Run the .bat file on the Windows agent
+                bat '''C:\\path\\to\\your\\script.bat'''
+            }
+        }
+    }
+} 
