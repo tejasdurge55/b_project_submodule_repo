@@ -40,7 +40,7 @@ pipeline {
                     // """, returnStdout: true).trim()
 
 
-                    echo "PR Body: ${prBody}"
+                    // echo "PR Body: ${prBody}"
                     
                     // Determine the version increment
                     def incrementType = 'patch' // Default increment
