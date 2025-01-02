@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        GITHUB_TOKEN = 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 // Replace with your Jenkins credential Id dev
+        GITHUB_TOKEN = "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" // Replace with your Jenkins credential Id dev
         GIT_USER_EMAIL = "tejas.y.durge@gmail.com"
         GIT_USER_NAME = "tejasdurge55"
     }
