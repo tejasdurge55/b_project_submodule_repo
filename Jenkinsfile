@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        GITHUB_TOKEN = credentials('github-token') // Replace with your Jenkins credential Id dev
+        GITHUB_TOKEN = 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 // Replace with your Jenkins credential Id dev
         GIT_USER_EMAIL = "tejas.y.durge@gmail.com"
         GIT_USER_NAME = "tejasdurge55"
     }
@@ -243,7 +243,7 @@ pipeline {
                           -d '{
                                 "tag_name": "'$NEW_TAG'",
                                 "name": "'$NEW_TAG'",
-                                "body": "Release for version '$NEW_TAG'",
+                                "body": "Release for version '$NEW_TAG'\\n\\n[Release link](https://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@github.com/tejasdurge55/b_project_submodule_repo/releases/download/$NEW_TAG/HelloWorld.jar)",
                                 "draft": false,
                                 "prerelease": false
                               }' \
