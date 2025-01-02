@@ -93,7 +93,7 @@ pipeline {
                     sh 'git commit -m "Adding compiled artifact"'
                     
                     // Push the artifact to a separate branch
-                    sh 'git push https://${GITHUB_TOKEN}@github.com/tejasdurge55/b_project_submodule_repo.git HEAD:artifact-branch --force'
+                    // sh 'git push https://${GITHUB_TOKEN}@github.com/tejasdurge55/b_project_submodule_repo.git HEAD:artifact-branch --force'
                     
                     // Tag the repository with the new version
                     // sh 'git tag $NEW_TAG'
