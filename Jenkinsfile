@@ -106,7 +106,7 @@ pipeline {
                         -d '{
                               "tag_name": "$NEW_TAG",
                               "name": "$NEW_TAG",
-                              "body": "Release for version $NEW_TAG  [Release link](https://github.com/tejasdurge55/b_project_submodule_repo/releases/download/v1.1.2/HelloWorld.jar)",
+                              "body": "Release for version $NEW_TAG",
                               "draft": false,
                               "prerelease": false
                             }' \
