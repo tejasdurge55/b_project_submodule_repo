@@ -44,15 +44,15 @@ pipeline {
                     
                     // Determine the version increment
                     def incrementType = 'patch' // Default increment
-                    if (prBody.contains("[X] **Major**") || prBody.contains("[x] **Major**") ) {
-                        incrementType = 'major'
-                    } else if (prBody.contains("[X] **Minor**") || prBody.contains("[x] **Minor**") ) {
-                        incrementType = 'minor'
-                    } else if (prBody.contains("[X] **Patch**") || prBody.contains("[x] **Patch**") ) {
-                        incrementType = 'patch'
-                    } else {
-                        error "No valid version increment type specified in the PR body."
-                    }
+                    // if (prBody.contains("[X] **Major**") || prBody.contains("[x] **Major**") ) {
+                    //     incrementType = 'major'
+                    // } else if (prBody.contains("[X] **Minor**") || prBody.contains("[x] **Minor**") ) {
+                    //     incrementType = 'minor'
+                    // } else if (prBody.contains("[X] **Patch**") || prBody.contains("[x] **Patch**") ) {
+                    //     incrementType = 'patch'
+                    // } else {
+                    //     error "No valid version increment type specified in the PR body."
+                    // }
                     
                     echo "Version increment type: ${incrementType}"
                     
