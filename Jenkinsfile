@@ -237,46 +237,40 @@ pipeline {
 
                     
                     sh """
-                        response=$(curl -X POST \
+                        response=\$(curl -X POST \
                           -H "Authorization: token ${GITHUB_TOKEN}" \
                           -H "Content-Type: application/json" \
                           -d '{
-                                "tag_name": "'$NEW_TAG'",
-                                "name": "'$NEW_TAG'",
-                                "body": "Release for version '$NEW_TAG'\\n\\n[Release link](https://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@github.com/tejasdurge55/b_project_submodule_repo/releases/download/$NEW_TAG/HelloWorld.jar)",
+                                "tag_name": "${NEW_TAG}",
+                                "name": "${NEW_TAG}",
+                                "body": "Release for version '${NEW_TAG}'\\n\\n[Release link](https://github.com/tejasdurge55/b_project_submodule_repo/releases/download/${NEW_TAG}/HelloWorld.jar)",
                                 "draft": false,
                                 "prerelease": false
                               }' \
                           https://api.github.com/repos/tejasdurge55/b_project_submodule_repo/releases)
                         
                         # Extract the upload URL from the response
-                        upload_url=$(echo "$response" | jq -r '.upload_url' | sed -e "s/{?name,label}//")
+                        upload_url=\$(echo "\$response" | jq -r '.upload_url' | sed -e "s/{?name,label}//")
                         
-                        if [ -z "$upload_url" ]; then
+                        if [ -z "\$upload_url" ]; then
                           echo "Error: Failed to retrieve upload URL from GitHub response."
                           exit 1
                         fi
                         
                         # Specify the file to upload
                         file_path="java_artifacts/HelloWorld.jar"
-                        file_name=$(basename "$file_path")
+                        file_name=\$(basename "\$file_path")
                         
                         # Upload the asset
                         curl -X POST \
                           -H "Authorization: token ${GITHUB_TOKEN}" \
                           -H "Content-Type: application/octet-stream" \
-                          --data-binary @"$file_path" \
-                          "${upload_url}?name=${file_name}"
-                        
-                        if [ $? -ne 0 ]; then
-                          echo "Error: Failed to upload the asset."
-                          exit 1
-                        fi
+                          --data-binary @"\$file_path" \
+                          "\${upload_url}?name=\${file_name}"
                         
                         echo "Release created and asset uploaded successfully!"
-
-                    
                     """
+
                 }
             }
         }
